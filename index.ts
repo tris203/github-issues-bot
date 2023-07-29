@@ -69,6 +69,7 @@ client.on("interactionCreate", async (interaction) => {
             })
             .then((res) => {
                 interaction.reply(`Issue created: ${res.data.html_url}`);
+                console.log `Issue created: ${res.data.html_url}`;
             });
     }
 });
