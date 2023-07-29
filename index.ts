@@ -37,7 +37,7 @@ client.on("ready", () => {
     }
 
     commands?.create({
-        name: "Open github issue",
+        name: "Open Developer Issue",
         type: 3,
     });
 });
@@ -45,14 +45,16 @@ client.on("ready", () => {
 client.on("interactionCreate", async (interaction) => {
     if (interaction.isMessageContextMenuCommand()) {
         const { commandName, targetMessage } = interaction;
-        if (commandName === "Open github issue") {
-            const modal = getModal(targetMessage.content);
+        if (commandName === "Open Developer Issue") {
+            const modal = getModal(targetMessage.content, targetMessage.author.username, interaction.user.username);
             interaction.showModal(modal);
         }
     } else if (interaction.isModalSubmit()) {
         const { fields } = interaction;
-        const issueTitle = fields.getField("issueTitle").value;
-        const issueDescription = fields.getField("issueDescription").value;
+        const issueTitle = fields.getTextInputValue("issueTitle");
+        const issueDescription = fields.getTextInputValue("issueDescription");
+        const issueSubmitter = fields.getTextInputValue("issueSubmitter");
+        const issueAuthor = fields.getTextInputValue("issueAuthor");
         const octokit = new Octokit({
             auth: process.env.GITHUB_ACCESS_TOKEN,
             baseUrl: "https://api.github.com",
@@ -63,7 +65,7 @@ client.on("interactionCreate", async (interaction) => {
                 owner: process.env.GITHUB_USERNAME || "",
                 repo: process.env.GITHUB_REPOSITORY || "",
                 title: issueTitle,
-                body: issueDescription,
+                body: `**Submitter**: ${issueSubmitter}\n**Author**: ${issueAuthor}\n\n${issueDescription}`,
             })
             .then((res) => {
                 interaction.reply(`Issue created: ${res.data.html_url}`);
