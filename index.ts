@@ -1,6 +1,7 @@
 import DiscordJS from "discord.js";
 import dotenv from "dotenv";
 import { Octokit } from "@octokit/rest";
+import { createAppAuth } from "@octokit/auth-app";
 import { getModal } from "./utils";
 import express from "express";
 dotenv.config();
@@ -55,8 +56,23 @@ client.on("interactionCreate", async (interaction) => {
         const issueDescription = fields.getTextInputValue("issueDescription");
         const issueSubmitter = fields.getTextInputValue("issueSubmitter");
         const issueAuthor = fields.getTextInputValue("issueAuthor");
+
+        const installationId = process.env.GITHUB_INSTALLATION_ID || 0;
+
+        const auth = createAppAuth({
+            appId: process.env.GITHUB_APP_ID || "",
+            privateKey: process.env.GITHUB_PRIVATE_KEY || "",
+            installationId: installationId,
+        });
+
+        
+            // Get an installation access token
+            const { token } = await auth({
+              type: 'installation',
+            });
+
         const octokit = new Octokit({
-            auth: process.env.GITHUB_ACCESS_TOKEN,
+            auth: token,
             baseUrl: "https://api.github.com",
         });
 
