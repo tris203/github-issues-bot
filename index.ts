@@ -59,9 +59,13 @@ client.on("interactionCreate", async (interaction) => {
 
         const installationId = process.env.GITHUB_INSTALLATION_ID || 0;
 
+            //base64 decode the private key
+            const buff = Buffer.from(process.env.GITHUB_PRIVATE_KEY || "", 'base64');
+            const privateKey = buff.toString('ascii');
+
         const auth = createAppAuth({
             appId: process.env.GITHUB_APP_ID || "",
-            privateKey: process.env.GITHUB_PRIVATE_KEY || "",
+            privateKey: privateKey,
             installationId: installationId,
         });
 
