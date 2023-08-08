@@ -29,18 +29,27 @@ client.on("ready", () => {
 
     const guild = client.guilds.cache.get(guildId);
 
+    console.log('Connected to server: ' + guild?.name)
+
     let commands;
 
     if (guild) {
         commands = guild.commands;
+        commands?.create({
+            name: "Open Developer Issue",
+            type: 3,
+        });
+        console.log ('Commands created')
     } else {
         commands = client.application?.commands;
+        commands?.create({
+            name: "Open Developer Issue",
+            type: 3,
+        });
+        console.log ('Commands created')
     }
 
-    commands?.create({
-        name: "Open Developer Issue",
-        type: 3,
-    });
+
 });
 
 client.on("interactionCreate", async (interaction) => {
